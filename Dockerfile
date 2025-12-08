@@ -5,6 +5,13 @@ FROM alpine:latest
 RUN apk add --no-cache --update python3 py3-pip bash
 ADD ./webapp/requirements.txt /tmp/requirements.txt
 
+# --- NOUVELLE ÉTAPE : Installer les dépendances de compilation (build-base, etc.) ---
+# .build-deps est un package virtuel qui regroupe les outils
+RUN apk add --no-cache --virtual .build-deps \
+    gcc \
+    musl-dev \
+    python3-dev
+    
 # Install dependencies
 RUN pip3 install --no-cache-dir -q -r /tmp/requirements.txt
 
