@@ -18,7 +18,7 @@ RUN apk add --no-cache --virtual .build-deps \
     python3-dev
 
 # Install dependencies (cette étape ne devrait plus échouer)
-RUN pip3 install --no-cache-dir -q -r /tmp/requirements.txt
+RUN pip3 install --no-cache-dir -q -r /tmp/requirements.txt --break-system-packages
 
 # Nettoyage : Supprimer les dépendances de compilation pour réduire la taille de l'image
 RUN apk del .build-deps
