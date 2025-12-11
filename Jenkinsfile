@@ -13,6 +13,10 @@ pipeline {
         string(name: 'PORT_MAPPING', defaultValue: '8090:5000', description: 'Mappage de port Hôte:Conteneur.')
         
         // NOTE: On retire TEST_URL des paramètres fixes car on va la calculer dynamiquement
+        // ENDPOINT API DEPLOYMENT
+       string(name: 'STG_API_ENDPOINT',defaultValue: 'http://127.0.0.1:1993/',description: 'Staging API.')
+       string(name: 'STG_APP_ENDPOINT',defaultValue: 'http://127.0.0.1:80/',description: 'Staging API.')
+
     }
     
     stages {
@@ -94,29 +98,41 @@ pipeline {
             }
         }
 
-        stage('🚀 Push vers Docker Hub') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    script {
-                        sh """
-                            echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin
-                        """
-                        
-                        echo "Push de l'image ${env.FULL_IMAGE_NAME}..."
-                        sh "docker push ${env.FULL_IMAGE_NAME}"
-                        
-                        sh "docker logout"
-                        echo "✅ Image poussée avec succès."
-                    }
-                }
-            }
-        }
-
-        stage('🧹 Nettoyage') {
+           stage('🧹 Nettoyage') {
             steps {
                 echo "Arrêt du conteneur de test..."
                 sh "docker rm -f ${params.CONTAINER_NAME} || true"
             }
         }
+
+
+            stage('✅ APPEL API STAGING') {
+            steps {
+                script {
+                    // --- CRÉATION DU PONT (Calcul de l'IP Gateway) ---
+                    // 1. On récupère l'IP actuelle de Jenkins (ex: 172.17.0.5 ou 10.0.0.4)
+                    // La commande 'hostname -i' fonctionne sur 99% des images Linux
+                    def jenkinsIp = sh(returnStdout: true, script: "hostname -i | awk '{print \$1}'").trim()
+                    
+                    // 2. On remplace le dernier segment par .1 pour trouver la passerelle (L'Hôte)
+                    // Ex: 10.0.0.4 devient 10.0.0.1
+                    def gatewayIp = jenkinsIp.tokenize('.')[0..2].join('.') + '.1'
+                    
+                    echo "📍 IP Jenkins: ${jenkinsIp}"
+                    echo "🌉 Pont vers l'Hôte (Gateway): ${gatewayIp}"
+
+                    // 3. On reconstruit l'URL avec cette IP dynamique
+                    def port = params.PORT_MAPPING.split(':')[0]
+                    def dynamicUrl = "http://${gatewayIp}:1993/staging"
+                    sh """
+                    curl -X POST ${dynamicUrl} -H 'Content-Type: application/json' -d '{"your_name":"gabriel","container_image":${IMAGE_NAME}, "external_port":"1993", "internal_port":"80"}'
+                    """
+                }
+            }
+        }
+
+    
+
+     
     }
 }
