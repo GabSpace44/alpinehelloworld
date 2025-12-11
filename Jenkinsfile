@@ -84,7 +84,7 @@ pipeline {
                     // 3. On reconstruit l'URL avec cette IP dynamique
                     def port = params.PORT_MAPPING.split(':')[0]
                     def dynamicUrl = "http://${gatewayIp}:${port}"
-                    
+                    def fullImageName = "gabriel45/${params.IMAGE_NAME}:${params.IMAGE_TAG}"
                     echo "🔍 Tentative de connexion sur le pont : ${dynamicUrl}"
                     
                     // Test officiel
@@ -125,7 +125,7 @@ pipeline {
                     def port = params.PORT_MAPPING.split(':')[0]
                     def dynamicUrl = "http://${gatewayIp}:1993/staging"
                     sh """
-                    curl -X POST ${dynamicUrl} -H 'Content-Type: application/json' -d '{"your_name":"gabriel","container_image":${IMAGE_NAME}, "external_port":"80", "internal_port":"80"}'
+                    curl -X POST ${dynamicUrl} -H 'Content-Type: application/json' -d '{"your_name":"gabriel45","container_image":${FULL_IMAGE_NAME}, "external_port":"80", "internal_port":"80"}'
                     """
                 }
             }
