@@ -14,7 +14,7 @@ pipeline {
         
         // NOTE: On retire TEST_URL des paramètres fixes car on va la calculer dynamiquement
         // ENDPOINT API DEPLOYMENT
-       string(name: 'STG_API_ENDPOINT',defaultValue: 'http://127.0.0.1:1993/',description: 'Staging API.')
+       string(name: 'STG_API_ENDPOINT',defaultValue: 'http://ip10-0-12-4-d4tdggp8lp9glhv4129g-1993.direct.docker.labs.eazytraining.fr/',description: 'Staging API.')
        string(name: 'STG_APP_ENDPOINT',defaultValue: 'http://127.0.0.1:80/',description: 'Staging API.')
 
     }
@@ -125,8 +125,10 @@ pipeline {
                     def port = params.PORT_MAPPING.split(':')[0]
                     def dynamicUrl = "http://${gatewayIp}:1993/staging"
                     sh """
-                    curl -X POST ${dynamicUrl} -H 'Content-Type: application/json' -d '{"your_name":"gabriel45","container_image":\"${FULL_IMAGE_NAME}\", "external_port":"80", "internal_port":"80"}'
+                    curl -X POST ${STG_API_ENDPOINT} -H 'Content-Type: application/json' -d '{"your_name":"gabriel45","container_image":\"${FULL_IMAGE_NAME}\", "external_port":"80", "internal_port":"80"}'
                     """
+
+                    
                 }
             }
         }
