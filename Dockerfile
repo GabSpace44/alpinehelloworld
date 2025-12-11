@@ -9,7 +9,7 @@ ADD ./webapp/requirements.txt /tmp/requirements.txt
 
 # --- CORRECTION POUR PIP INSTALL SUR ALPINE ---
 
-# Installer les dépendances de compilation nécessaires
+# Installer les dépendances de compilation nécessaires.
 # pour que pip puisse construire certains packages (ex: psycopg2, lxml).
 # .build-deps est un paquet virtuel pour faciliter le nettoyage.
 RUN apk add --no-cache --virtual .build-deps \
