@@ -116,7 +116,7 @@ pipeline {
                 script {
                    
                     sh """
-                    curl -X POST ${STG_API_ENDPOINT} -H 'Content-Type: application/json' -d '{"your_name":"gabriel45","container_image":\"${FULL_IMAGE_NAME}\", "external_port":"80", "internal_port":"80"}'
+                    curl -X POST ${STG_API_ENDPOINT} -H 'Content-Type: application/json' -d '{"your_name":"gabriel45","container_image":"gabriel45/test-acceptance-image:latest", "external_port":"80", "internal_port":"80"}'
                     """
 
                     
