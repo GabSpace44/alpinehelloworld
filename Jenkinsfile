@@ -125,7 +125,7 @@ pipeline {
                     def port = params.PORT_MAPPING.split(':')[0]
                     def dynamicUrl = "http://${gatewayIp}:1993/staging"
                     sh """
-                    curl -X POST ${dynamicUrl} -H 'Content-Type: application/json' -d '{"your_name":"gabriel","container_image":${IMAGE_NAME}, "external_port":"1993", "internal_port":"80"}'
+                    curl -X POST ${dynamicUrl} -H 'Content-Type: application/json' -d '{"your_name":"gabriel","container_image":${IMAGE_NAME}, "external_port":"80", "internal_port":"80"}'
                     """
                 }
             }
