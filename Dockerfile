@@ -1,7 +1,7 @@
 # Grab the latest alpine image
 FROM alpine:latest
 
-# Install python and pip, and bash (pour le debug)
+# Install python and pip, and bash (pour le debug).
 RUN apk add --no-cache --update python3 py3-pip bash
 
 # Ajouter le fichier de dépendances
