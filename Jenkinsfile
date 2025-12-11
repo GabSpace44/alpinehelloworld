@@ -15,8 +15,13 @@ pipeline {
         // NOTE: On retire TEST_URL des paramètres fixes car on va la calculer dynamiquement
         // ENDPOINT API DEPLOYMENT
        string(name: 'STG_API_ENDPOINT',defaultValue: 'http://ip10-0-12-4-d4tdggp8lp9glhv4129g-1993.direct.docker.labs.eazytraining.fr/',description: 'Staging API.')
-       string(name: 'STG_APP_ENDPOINT',defaultValue: 'http://127.0.0.1:80/',description: 'Staging API.')
+       string(name: 'STG_APP_ENDPOINT',defaultValue: 'http://ip10-0-12-4-d4tdggp8lp9glhv4129g-80.direct.docker.labs.eazytraining.fr/',description: 'Staging API.')
 
+    }
+
+    environment {
+       
+        STG_API_ENDPOINT = "${params.STG_API_ENDPOINT}"
     }
     
     stages {
@@ -109,21 +114,7 @@ pipeline {
             stage('✅ APPEL API STAGING') {
             steps {
                 script {
-                    // --- CRÉATION DU PONT (Calcul de l'IP Gateway) ---
-                    // 1. On récupère l'IP actuelle de Jenkins (ex: 172.17.0.5 ou 10.0.0.4)
-                    // La commande 'hostname -i' fonctionne sur 99% des images Linux
-                    def jenkinsIp = sh(returnStdout: true, script: "hostname -i | awk '{print \$1}'").trim()
-                    
-                    // 2. On remplace le dernier segment par .1 pour trouver la passerelle (L'Hôte)
-                    // Ex: 10.0.0.4 devient 10.0.0.1
-                    def gatewayIp = jenkinsIp.tokenize('.')[0..2].join('.') + '.1'
-                    
-                    echo "📍 IP Jenkins: ${jenkinsIp}"
-                    echo "🌉 Pont vers l'Hôte (Gateway): ${gatewayIp}"
-
-                    // 3. On reconstruit l'URL avec cette IP dynamique
-                    def port = params.PORT_MAPPING.split(':')[0]
-                    def dynamicUrl = "http://${gatewayIp}:1993/staging"
+                   
                     sh """
                     curl -X POST ${STG_API_ENDPOINT} -H 'Content-Type: application/json' -d '{"your_name":"gabriel45","container_image":\"${FULL_IMAGE_NAME}\", "external_port":"80", "internal_port":"80"}'
                     """
